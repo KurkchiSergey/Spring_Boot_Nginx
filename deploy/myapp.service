@@ -1,0 +1,19 @@
+[Unit]
+Description=myapp (Spring Boot CRUD service, running in Docker)
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+RestartSec=5
+# на случай, если контейнер с прошлого запуска/краша остался висеть —
+# "-" перед командой значит "не фейлиться, если её не существует"
+ExecStartPre=-/usr/bin/docker stop myapp
+ExecStartPre=-/usr/bin/docker rm myapp
+ExecStart=/usr/bin/docker run --rm --name myapp -p 8080:8080 myapp:latest
+ExecStop=/usr/bin/docker stop myapp
+TimeoutStartSec=30
+
+[Install]
+WantedBy=multi-user.target
